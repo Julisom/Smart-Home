@@ -7,12 +7,12 @@ import time
 BROKER = "broker.hivemq.com"
 PORT   = 1883
 
-TOPIC_LIGHT       = "home/livingroom/light"
-TOPIC_BLINDS      = "home/livingroom/blinds"
-TOPIC_TEMPERATURE = "home/kitchen/temperature"
-TOPIC_PIR         = "home/bedroom/pir"
-TOPIC_BUTTON      = "home/button"
-TOPIC_GESTURE     = "home/gesture"
+TOPIC_LIGHT       = "home223/livingroom/light"
+TOPIC_BLINDS      = "home223/livingroom/blinds"
+TOPIC_TEMPERATURE = "home223/kitchen/temperature"
+TOPIC_PIR         = "home223/bedroom/pir"
+TOPIC_BUTTON      = "home223/button"
+TOPIC_GESTURE     = "home223/gesture"
 
 # Farben
 BG        = "#1a1a2e"
