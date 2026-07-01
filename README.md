@@ -1,5 +1,7 @@
 # Smart-Home Projektarbeit
 
+**von Julius Sommermann und Noah Habermann**
+
 ## Projektbeschreibung
 Ein Smart-Home-System das über Handgesten gesteuert wird. Sensoren und Aktoren werden über einen ESP32 in Wokwi simuliert, die Kommunikation läuft über MQTT. Ein Python-Dashboard visualisiert alle Zustände in Echtzeit.
 
@@ -21,6 +23,14 @@ MediaPipe (Noah)  →  MQTT-Broker  →  ESP32 in Wokwi (Julius)
 | Gestensteuerung | Python, MediaPipe | Noah |
 | ESP32 Simulation | Wokwi, Arduino C++ | Julius |
 | Dashboard | Python, Tkinter, paho-mqtt | Gemeinsam |
+
+---
+
+## Voraussetzungen
+- Python 3.x
+- Installierte Bibliotheken: `pip install -r requirements.txt`
+- Wokwi-Projekt im Browser geöffnet
+- Internetverbindung (für MQTT-Broker)
 
 ---
 
