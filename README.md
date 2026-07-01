@@ -1,6 +1,8 @@
 # Smart-Home
 Projekt mit dem Ziel ein Dashboard zur Steuerung eines Smart-Homes 
 
+>>WICHTIG README VOR ABGABE ANPASSEN<<
+
 1. Kundenauftrag
 Ein Unternehmen möchte einen Prototyp für ein modernes Smart-Home-System entwickeln. Die Bedienung soll berührungslos über Handgesten erfolgen. Sensoren und Aktoren werden über einen ESP32 in Wokwi simuliert, die Kommunikation läuft über MQTT. Zusätzlich soll ein Dashboard entwickelt werden, das die Wohnung grafisch darstellt und alle Zustände in Echtzeit visualisiert.
 Das Projekt zeigt, wie KI, IoT und moderne Softwareentwicklung zusammenarbeiten. Ziel ist eine möglichst realistische Smart-Home-Anwendung.
@@ -72,3 +74,5 @@ Gemeinsam
 Noah: Aufgabe Person A 
 
 Julius: Aufgabe Person B 
+•	Abschlusspräsentation
+
