@@ -8,9 +8,9 @@ const char* WIFI_SSID = "Wokwi-GUEST";
 const char* WIFI_PASS = "";
 
 // MQTT-Broker
-const char* MQTT_BROKER = "broker.hivemq.com";
+const char* MQTT_BROKER = "test.mosquitto.org";
 const int   MQTT_PORT   = 1883;
-const char* CLIENT_ID   = "smarthome-esp32-julius";
+const char* CLIENT_ID   = "esp32-julius-223";
 
 // Pins
 #define LED_PIN   2
@@ -20,12 +20,12 @@ const char* CLIENT_ID   = "smarthome-esp32-julius";
 #define SERVO_PIN 12
 
 // Topics
-#define TOPIC_LIGHT       "home/livingroom/light"
-#define TOPIC_BLINDS      "home/livingroom/blinds"
-#define TOPIC_TEMPERATURE "home/kitchen/temperature"
-#define TOPIC_PIR         "home/bedroom/pir"
-#define TOPIC_BUTTON      "home/button"
-#define TOPIC_GESTURE     "home/gesture"
+#define TOPIC_LIGHT       "home223/livingroom/light"
+#define TOPIC_BLINDS      "home223/livingroom/blinds"
+#define TOPIC_TEMPERATURE "home223/kitchen/temperature"
+#define TOPIC_PIR         "home223/bedroom/pir"
+#define TOPIC_BUTTON      "home223/button"
+#define TOPIC_GESTURE     "home223/gesture"
 
 DHT dht(DHT_PIN, DHT22);
 Servo blindsServo;
@@ -33,8 +33,10 @@ WiFiClient wifiClient;
 PubSubClient mqtt(wifiClient);
 
 unsigned long lastSensorRead = 0;
+unsigned long lastReconnect  = 0;
 bool lastBtnState = HIGH;
 bool lastPirState = LOW;
+bool lightOn = false;
 
 void mqttCallback(char* topic, byte* payload, unsigned int length) {
   String msg;
@@ -42,10 +44,12 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
   String t = String(topic);
 
   if (t == TOPIC_LIGHT || t == TOPIC_GESTURE) {
-    if (msg == "ON" || msg == "licht_an") {
+    if (msg == "ON" || msg == "licht_an" || msg == "thumbs_up") {
+      lightOn = true;
       digitalWrite(LED_PIN, HIGH);
       Serial.println("[LED] AN");
-    } else if (msg == "OFF" || msg == "licht_aus") {
+    } else if (msg == "OFF" || msg == "licht_aus" || msg == "thumbs_down") {
+      lightOn = false;
       digitalWrite(LED_PIN, LOW);
       Serial.println("[LED] AUS");
     }
@@ -72,23 +76,21 @@ void connectWiFi() {
   Serial.println(" verbunden!");
 }
 
-void connectMQTT() {
+bool connectMQTT() {
+  Serial.print("Verbinde mit MQTT...");
   mqtt.setServer(MQTT_BROKER, MQTT_PORT);
   mqtt.setCallback(mqttCallback);
-  while (!mqtt.connected()) {
-    Serial.print("Verbinde mit MQTT...");
-    if (mqtt.connect(CLIENT_ID)) {
-      Serial.println(" verbunden!");
-      mqtt.subscribe(TOPIC_LIGHT);
-      mqtt.subscribe(TOPIC_BLINDS);
-      mqtt.subscribe(TOPIC_GESTURE);
-      Serial.println("Subscribed: " TOPIC_LIGHT ", " TOPIC_BLINDS ", " TOPIC_GESTURE);
-    } else {
-      Serial.print(" Fehler rc=");
-      Serial.println(mqtt.state());
-      delay(2000);
-    }
+  if (mqtt.connect(CLIENT_ID)) {
+    Serial.println(" verbunden!");
+    mqtt.subscribe(TOPIC_LIGHT);
+    mqtt.subscribe(TOPIC_BLINDS);
+    mqtt.subscribe(TOPIC_GESTURE);
+    Serial.println("Topics abonniert.");
+    return true;
   }
+  Serial.print(" Fehler rc=");
+  Serial.println(mqtt.state());
+  return false;
 }
 
 void setup() {
@@ -106,15 +108,25 @@ void setup() {
 }
 
 void loop() {
-  if (!mqtt.connected()) connectMQTT();
+  // MQTT Verbindung aufrechterhalten
+  if (!mqtt.connected()) {
+    unsigned long now = millis();
+    if (now - lastReconnect >= 5000) {
+      lastReconnect = now;
+      connectMQTT();
+    }
+  }
   mqtt.loop();
 
   // Taster prüfen
   bool btnState = digitalRead(BTN_PIN);
   if (btnState == LOW && lastBtnState == HIGH) {
-    mqtt.publish(TOPIC_BUTTON, "PRESSED");
-    Serial.println("[BUTTON] Gedrückt -> MQTT gesendet");
     delay(50);
+    lightOn = !lightOn;
+    digitalWrite(LED_PIN, lightOn ? HIGH : LOW);
+    mqtt.publish(TOPIC_LIGHT, lightOn ? "ON" : "OFF");
+    mqtt.publish(TOPIC_BUTTON, "PRESSED");
+    Serial.printf("[BUTTON] Licht %s\n", lightOn ? "AN" : "AUS");
   }
   lastBtnState = btnState;
 
@@ -135,7 +147,7 @@ void loop() {
       char buf[32];
       snprintf(buf, sizeof(buf), "%.1f", temp);
       mqtt.publish(TOPIC_TEMPERATURE, buf);
-      Serial.printf("[DHT22] Temp: %.1f°C  Feuchte: %.1f%%\n", temp, hum);
+      Serial.printf("[DHT22] Temp: %.1f C  Feuchte: %.1f%%\n", temp, hum);
     }
   }
 }

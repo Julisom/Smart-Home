@@ -4,7 +4,7 @@ import paho.mqtt.client as mqtt
 import threading
 import time
 
-BROKER = "broker.hivemq.com"
+BROKER = "test.mosquitto.org"
 PORT   = 1883
 
 TOPIC_LIGHT       = "home223/livingroom/light"
@@ -302,9 +302,9 @@ class SmartHomeDashboard:
 
             elif topic == TOPIC_GESTURE:
                 self.last_gesture.set(payload)
-                if payload == "licht_an":
+                if payload in ("licht_an", "thumbs_up", "ON"):
                     self._update_light(True)
-                elif payload == "licht_aus":
+                elif payload in ("licht_aus", "thumbs_down", "OFF"):
                     self._update_light(False)
 
             elif topic == TOPIC_BLINDS:
