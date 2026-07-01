@@ -33,6 +33,20 @@ MediaPipe (Noah)  →  MQTT-Broker  →  ESP32 in Wokwi (Julius)
 - Internetverbindung (für MQTT-Broker)
 
 ---
+## Mediapipe
+
+Eine von Google enteickelte KI zur Bilderkennung. Es benötingt zugriff auf eine Kamera und kann zwei Gesten erkennen.
+| 👍 Daumen hoch | Licht AN |
+| 👎 Daumen runter | Licht AUS |
+
+     Vor ausführung des Programms folgende Befehle ins Terminal eingeben:
+
+          1. `uv sync` – installiert alle Abhängigkeiten
+          2. Modell herunterladen:
+          `curl -o hand_landmarker.task https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task`
+          3. `uv run main.py` - startet das Programm
+
+---
 
 ## MQTT Topics
 
@@ -90,4 +104,4 @@ python main.py
 ---
 
 ## Abschlusspräsentation
-07.07.2026
+01.07.2026
